@@ -82,7 +82,7 @@ export const getMe = async (req, res) => {
 
         if (!user) {
             return res.status(404).json({
-                message: 'Пользователь не найден'
+                message: 'Пользователь не найден!'
             });
         }
 
