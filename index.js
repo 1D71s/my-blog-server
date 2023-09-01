@@ -1,7 +1,9 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv"
+
 import cors from "cors"
+//for connect to all IP adress
 
 import authRoute from "./routes/auth.js"
 import postRoute from "./routes/post.js"
