@@ -4,6 +4,11 @@ import dotenv from "dotenv"
 import cors from "cors"
 
 import authRoute from "./routes/auth.js"
+import postRoute from "./routes/post.js"
+
+import { checkAuth } from "./utils/auth.js";
+
+import multer from 'multer'
 
 const app = express()
 dotenv.config()
@@ -19,7 +24,29 @@ app.use(express.json())
 
 // Routes
 app.use('/auth/', authRoute)
+app.use('/posts/', postRoute)
 
+//for images
+const storage = multer.diskStorage({
+    destination: (_, __, cb) => {
+        cb(null, 'uploads')
+    },
+    filename: (_, file, cb) => {
+        cb(null, file.originalname)
+    },
+})
+
+const upload = multer({ storage })
+app.use('/uploads', express.static('uploads'))
+
+app.post('/upload', checkAuth, upload.single('image'), (req,res) => {
+    res.json({
+        url: `/uploads/${req.file.originalname}`,
+    })
+})
+
+
+//START
 async function start() {
     try {
         await mongoose.connect(

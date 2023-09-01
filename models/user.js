@@ -14,6 +14,10 @@ const UserSchema = new Schema({
         type: String,
         required: true,
     },
+    useravatar: {
+        type: String,
+        default: 'ava.webp'
+    },
     posts: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'

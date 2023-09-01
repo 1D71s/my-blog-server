@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from "../models/User.js";
 import bcrypt from 'bcryptjs'
+import * as EmailValidator from 'email-validator';
 
 export const register = async (req, res) => { 
     try {
@@ -11,42 +12,44 @@ export const register = async (req, res) => {
         if (existingUser) {
             let message = '';
             if (existingUser.username === username) {
-                message = 'Такой пользователь с таким именем уже занят'
+                message = 'Такой пользователь с таким именем уже занят!'
             }
             if (existingUser.email === email) {
-                message = 'Такой пользователь с такой почтой уже занят'
+                message = 'Такой пользователь с такой почтой уже занят!'
             }
-            res.json({message});
-            return;
+            res.json({ message });
+        } else if (!EmailValidator.validate(email)) {
+            res.json({ message: 'Некорректный адрес электронной почты!' });
+        } else if (password.length < 6) {
+            res.json({ message: 'Пароль слишком короткий!' });
+        } else {
+            const satl = bcrypt.genSaltSync(10)
+            const hash = bcrypt.hashSync(password, satl)
+
+            const newUser = new User({
+                username,
+                email,
+                password: hash,
+            })
+
+            await newUser.save()
+
+            res.json({ message: 'Регистрация прошла успешно!' })
         }
-        
-        const satl = bcrypt.genSaltSync(10)
-        const hash = bcrypt.hashSync(password, satl)
-
-        const newUser = new User({
-            username,
-            email,
-            password: hash,
-        })
-
-        await newUser.save()
-
-        res.json({ message: 'Регистрация прошла успешно' })
-
     } catch (error) { 
-        res.json({message: 'Ошибка при создании пользователя'})
+        res.json({ message: 'Ошибка при создании пользователя!' })
     }
 }
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body
+        const { username, password } = req.body
         
-        const user = await User.findOne({email})
+        const user = await User.findOne({username})
 
         if (!user) {
             return res.json({
-                message: 'Такого пользователя не существует'
+                message: 'Такого пользователя не существует!'
             })
         }
 
@@ -54,7 +57,7 @@ export const login = async (req, res) => {
 
         if (!isPasswordCorect) {
             return res.json({
-                message: 'Неверный пароль'
+                message: 'Неверный пароль!'
             })
         }
 
@@ -67,12 +70,12 @@ export const login = async (req, res) => {
         res.json({
             id: user._id,
             token,
-            message: 'Вы вошли в систему'
+            message: 'Вы вошли в систему!'
         })
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({message: 'Ошибка при авторизации'})
+        res.status(500).json({message: 'Ошибка при авторизации!'})
     }
 }
 
@@ -86,11 +89,19 @@ export const getMe = async (req, res) => {
             });
         }
 
-        return res.json({ user });
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET,
+            {expiresIn: '30d'}
+        )
+
+        const { password, ...userData } = user._doc
+
+        return res.json({ ...userData, token });
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Что-то пошло не так' });
+        return res.status(500).json({ message: 'Что-то пошло не так!' });
     }
 };
 
