@@ -22,6 +22,6 @@ const UserSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'
     }]
-}, { timeseries: true })
+}, { timestamps: true, })
 
 export default mongoose.model('User', UserSchema)

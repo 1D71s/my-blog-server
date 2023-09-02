@@ -24,6 +24,7 @@ const DB_PASSWORD = process.env.DB_PASSWORD
 app.use(cors())
 app.use(express.json())
 
+
 // Routes
 app.use('/auth/', authRoute)
 app.use('/posts/', postRoute)
