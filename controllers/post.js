@@ -79,3 +79,24 @@ export const getMyPosts = async (req, res) => {
         res.json({message: 'Не удалось получить статьи пользователя!'})
     }
 }
+
+export const removePost = async (req, res) => {
+    try {
+
+        const {id} = req.params
+        const post = await Post.findByIdAndDelete(req.params.id)
+
+        if (!post) {
+            res.json({ message: 'Статью не найдено!' })
+        }
+
+        await User.findByIdAndUpdate(req.userId, {
+            $pull: { posts: req.params.id }
+        })
+
+        res.json({message: 'Статью удалено!', id})
+
+    } catch (error) {
+        res.json({message: 'Не удалось удалить статью!'})
+    }
+}
