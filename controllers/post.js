@@ -47,21 +47,27 @@ export const getAllPosts = async (req, res) => {
 
 export const getOnePosts = async (req, res) => {
     try {
-        const post = await Post.findByIdAndUpdate(req.params.id, 
-            { $inc: { views: 1 } },
-            { new: true }
-        )
+        const postId = req.params.id;
+        const userId = req.userId;
+
+        const post = await Post.findById(postId);
 
         if (!post) {
-            return res.json({message: 'Поста не найдено!'})
+            return res.json({ message: 'Поста не найдено!' });
         }
 
-        res.json(post)
+        if (!post.views.includes(userId) && userId !== 'no user') {
+            post.views.push(userId);
+            await post.save();
+        }
+
+        res.json(post);
 
     } catch (error) {
-        res.json({message: 'Не удалось получить пост!'})
+        res.json({ message: 'Не удалось получить пост!' });
     }
-}
+};
+
 
 export const getMyPosts = async (req, res) => {
     try {

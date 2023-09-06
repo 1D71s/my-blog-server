@@ -4,7 +4,7 @@ const PostSchema = new Schema({
     title: { type: String, required: true },
     tags: { type: Array, default: [] },
     text: { type: String, required: true },
-    views: { type: Number, default: 0 },
+    views: { type: Array, default: [] },
     image: { type: String, default: '' },
     author: {
         id: { type: String, required: true },

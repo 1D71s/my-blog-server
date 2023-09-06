@@ -29,6 +29,7 @@ app.use(express.json())
 app.use('/auth/', authRoute)
 app.use('/posts/', postRoute)
 
+
 //for images
 const storage = multer.diskStorage({
     destination: (_, __, cb) => {
