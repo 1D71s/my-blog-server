@@ -106,3 +106,32 @@ export const removePost = async (req, res) => {
         res.json({message: 'Не удалось удалить статью!'})
     }
 }
+
+export const likesPost = async (req, res) => {
+    try {
+      const userId = req.userId;
+      const postId = req.params.id;
+  
+      const post = await Post.findById(postId);
+  
+      if (!post) {
+        return res.status(404).json({ message: "Пост не найден" });
+      }
+  
+      const isLiked = post.likes.includes(userId);
+  
+      if (isLiked) {
+        await Post.findByIdAndUpdate(postId, {
+          $pull: { likes: userId }
+        });
+        res.json({ message: "Лайк удален" });
+      } else {
+        post.likes.push(userId);
+        await post.save();
+        res.json({ message: "Лайк добавлен" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Ошибка сервера" });
+    }
+  };
