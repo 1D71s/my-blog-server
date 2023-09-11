@@ -16,4 +16,5 @@ router.delete('/delete/:id', checkAuth, removePost)
 
 router.post('/like/:id', checkAuth, likesPost)
 
+
 export default router

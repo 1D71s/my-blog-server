@@ -7,6 +7,7 @@ import cors from "cors"
 
 import authRoute from "./routes/auth.js"
 import postRoute from "./routes/post.js"
+import commentRoute from "./routes/comments.js"
 
 import { checkAuth } from "./utils/auth.js";
 
@@ -28,6 +29,7 @@ app.use(express.json())
 // Routes
 app.use('/auth/', authRoute)
 app.use('/posts/', postRoute)
+app.use('/comments/', commentRoute)
 
 
 //for images

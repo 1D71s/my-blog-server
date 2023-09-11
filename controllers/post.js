@@ -1,5 +1,6 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js"
+import Comment from "../models/Comment.js"
 
 export const createPost = async (req, res) => {
     try {
@@ -61,7 +62,13 @@ export const getOnePosts = async (req, res) => {
             await post.save();
         }
 
-        res.json(post);
+        const comments = await Promise.all(
+            post.comments.map(post => {
+                return Comment.findById(post._id)
+            })
+        )
+
+        res.json({...post._doc, comments});
 
     } catch (error) {
         res.json({ message: 'Не удалось получить пост!' });
@@ -124,6 +131,7 @@ export const likesPost = async (req, res) => {
         await Post.findByIdAndUpdate(postId, {
           $pull: { likes: userId }
         });
+          
         res.json({ message: "Лайк удален" });
       } else {
         post.likes.push(userId);
@@ -134,4 +142,6 @@ export const likesPost = async (req, res) => {
       console.error(error);
       res.status(500).json({ message: "Ошибка сервера" });
     }
-  };
+};
+
+
