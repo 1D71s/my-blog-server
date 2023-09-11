@@ -1,6 +1,6 @@
 import User from "../models/User.js"
 
-export const changeProfile = async (req, res) => {
+export const editProfile = async (req, res) => {
     try {
         await User.updateOne(
             {

@@ -147,3 +147,27 @@ export const likesPost = async (req, res) => {
 };
 
 
+export const editPost = async (req, res) => {
+    try {
+        const { title, text, tags, image } = req.body;
+        const post = await Post.findById(req.params.id);
+
+        if (!post) {
+            return res.status(404).json({ message: 'Пост не найден!' });
+        }
+
+        if (req.userId !== post.author.id) {
+            return res.status(403).json({ message: 'Нет доступа!' });
+        }
+
+        await Post.updateOne({ _id: req.params.id }, { title, text, image, tags });
+
+        res.json({ message: 'Пост успешно отредактирован!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Что-то пошло не так!' });
+    }
+};
+
+
+
