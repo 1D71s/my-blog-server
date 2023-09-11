@@ -68,6 +68,8 @@ export const getOnePosts = async (req, res) => {
             })
         )
 
+        comments.reverse()
+
         res.json({...post._doc, comments});
 
     } catch (error) {
