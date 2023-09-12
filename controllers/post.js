@@ -146,7 +146,6 @@ export const likesPost = async (req, res) => {
     }
 };
 
-
 export const editPost = async (req, res) => {
     try {
         const { title, text, tags, image } = req.body;
@@ -162,7 +161,7 @@ export const editPost = async (req, res) => {
 
         await Post.updateOne({ _id: req.params.id }, { title, text, image, tags });
 
-        res.json({ message: 'Пост успешно отредактирован!' });
+        res.json({ message: 'Пост успешно обновлен!' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Что-то пошло не так!' });

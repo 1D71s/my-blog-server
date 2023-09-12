@@ -4,6 +4,6 @@ import { checkAuth } from "../utils/auth.js";
 
 const router = new Router()
 
-router.post('/change', checkAuth, editProfile)
+router.put('/change', checkAuth, editProfile)
 
 export default router

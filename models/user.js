@@ -16,7 +16,7 @@ const UserSchema = new Schema({
     },
     useravatar: {
         type: String,
-        default: 'ava.webp'
+        default: '/uploads/ava.webp'
     },
     posts: [{
         type: mongoose.Schema.Types.ObjectId,
