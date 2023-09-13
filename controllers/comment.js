@@ -9,11 +9,7 @@ export const createComment = async (req, res) => {
 
         const comment = new Comment({
             text,
-            author: {
-                id: author.id,
-                username: author.username,
-                useravatar: author.useravatar
-            }
+            author
         })
 
         await comment.save()
@@ -32,8 +28,10 @@ export const createComment = async (req, res) => {
 
 export const removeComment = async (req, res) => {
     try {
-        const comment = await Comment.findById(req.params.id)
-        if (req.userId === comment.author.id) {
+        const comment = await Comment.findById(req.params.id).populate('author')
+        
+
+        if (req.userId === comment.author._id.toString()) {
             await Comment.findByIdAndDelete(req.params.id)
 
             await Post.findByIdAndUpdate(req.params.post, {

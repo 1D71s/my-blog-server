@@ -2,6 +2,8 @@ import Post from "../models/Post.js";
 import User from "../models/User.js"
 import Comment from "../models/Comment.js"
 
+
+
 export const createPost = async (req, res) => {
     try {
         const { title, text, tags, image } = req.body
@@ -12,11 +14,7 @@ export const createPost = async (req, res) => {
             text,
             tags,
             image,
-            author: {
-                id: author._id,
-                username: author.username,
-                useravatar: author.useravatar
-            }
+            author
         })
 
         await newPost.save()
@@ -32,8 +30,8 @@ export const createPost = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
     try {
-        const posts = await Post.find().sort("-createdAt")
-        const popularPosts = await Post.find().sort("-views")
+        const posts = await Post.find().sort("-createdAt").populate('author')
+        const popularPosts = await Post.find().sort("-views").populate('author')
 
         if (!posts) {
             return res.json({message: 'Постов не нет!'})
@@ -51,7 +49,7 @@ export const getOnePosts = async (req, res) => {
         const postId = req.params.id;
         const userId = req.userId;
 
-        const post = await Post.findById(postId);
+        const post = await Post.findById(postId).populate('author');
 
         if (!post) {
             return res.json({ message: 'Поста не найдено!' });
@@ -64,7 +62,7 @@ export const getOnePosts = async (req, res) => {
 
         const comments = await Promise.all(
             post.comments.map(post => {
-                return Comment.findById(post._id)
+                return Comment.findById(post._id).populate('author')
             })
         )
 
@@ -84,7 +82,7 @@ export const getMyPosts = async (req, res) => {
 
         const list = await Promise.all(
             user.posts.map(post => {
-                return Post.findById(post._id)
+                return Post.findById(post._id).populate('author')
             })
         )
 
@@ -155,7 +153,9 @@ export const editPost = async (req, res) => {
             return res.status(404).json({ message: 'Пост не найден!' });
         }
 
-        if (req.userId !== post.author.id) {
+        if (req.userId !== post.author._id.toString()) {
+            console.log(req.userId)
+            console.log(post.author._id.toString())
             return res.status(403).json({ message: 'Нет доступа!' });
         }
 
@@ -167,6 +167,5 @@ export const editPost = async (req, res) => {
         res.status(500).json({ message: 'Что-то пошло не так!' });
     }
 };
-
 
 

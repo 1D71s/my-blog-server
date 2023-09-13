@@ -6,11 +6,7 @@ const PostSchema = new Schema({
     text: { type: String, required: true },
     views: { type: Array, default: [] },
     image: { type: String, default: '' },
-    author: {
-        id: { type: String, required: true },
-        username: { type: String, required: true },
-        useravatar: { type: String, required: true },
-    },
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     comments: [ { type: mongoose.Schema.Types.ObjectId, ref: 'Comment' } ]
 }, {timestamps: true,})
