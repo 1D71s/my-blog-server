@@ -5,23 +5,23 @@ import * as EmailValidator from 'email-validator';
 
 export const register = async (req, res) => { 
     try {
-        const { username, email, password } = req.body
+        const { username, email, password, firstName, lastName, sex } = req.body
 
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
 
         if (existingUser) {
             let message = '';
             if (existingUser.username === username) {
-                message = 'Такой пользователь с таким именем уже занят!'
+                message = 'This user with this name is already taken!'
             }
             if (existingUser.email === email) {
-                message = 'Такой пользователь с такой почтой уже занят!'
+                message = 'This user with this email is already taken!'
             }
             res.json({ message });
         } else if (!EmailValidator.validate(email)) {
-            res.json({ message: 'Некорректный адрес электронной почты!' });
+            res.json({ message: 'Invalid email address!' });
         } else if (password.length < 6) {
-            res.json({ message: 'Пароль слишком короткий!' });
+            res.json({ message: 'The password is too short!' });
         } else {
             const satl = bcrypt.genSaltSync(10)
             const hash = bcrypt.hashSync(password, satl)
@@ -30,14 +30,17 @@ export const register = async (req, res) => {
                 username,
                 email,
                 password: hash,
+                firstName,
+                lastName,
+                sex
             })
 
             await newUser.save()
 
-            res.json({ message: 'Регистрация прошла успешно!' })
+            res.json({ message: 'Registration completed successfully!' })
         }
     } catch (error) { 
-        res.json({ message: 'Ошибка при создании пользователя!' })
+        res.json({ message: 'Error creating user!' })
     }
 }
 
@@ -49,7 +52,7 @@ export const login = async (req, res) => {
 
         if (!user) {
             return res.json({
-                message: 'Такого пользователя не существует!'
+                message: 'This user does not exist!'
             })
         }
 
@@ -57,7 +60,7 @@ export const login = async (req, res) => {
 
         if (!isPasswordCorect) {
             return res.json({
-                message: 'Неверный пароль!'
+                message: 'Incorrect password!'
             })
         }
 
@@ -70,12 +73,12 @@ export const login = async (req, res) => {
         res.json({
             id: user._id,
             token,
-            message: 'Вы вошли в систему!'
+            message: 'You are logged in!'
         })
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({message: 'Ошибка при авторизации!'})
+        res.status(500).json({message: 'Error during authorization!'})
     }
 }
 
@@ -85,7 +88,7 @@ export const getMe = async (req, res) => {
 
         if (!user) {
             return res.status(404).json({
-                message: 'Пользователь не найден!'
+                message: 'User is not found!'
             });
         }
 
@@ -101,7 +104,7 @@ export const getMe = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Что-то пошло не так!' });
+        return res.status(500).json({ message: 'Something went wrong!' });
     }
 };
 

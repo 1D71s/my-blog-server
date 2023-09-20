@@ -10,13 +10,26 @@ const UserSchema = new Schema({
         type: String,
         required: true,
         unique: true,
-    },password: {
+    },
+    password: {
         type: String,
         required: true,
     },
     useravatar: {
         type: String,
         default: '/uploads/ava.webp'
+    },
+    firstName: {
+        type: String,
+        required: true,
+    },
+    lastName: {
+        type: String,
+        required: true,
+    },
+    sex: {
+        type: String,
+        required: true
     },
     posts: [{
         type: mongoose.Schema.Types.ObjectId,
