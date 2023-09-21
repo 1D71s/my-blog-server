@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from "../models/User.js";
 import bcrypt from 'bcryptjs'
-import * as EmailValidator from 'email-validator';
 
 export const register = async (req, res) => { 
     try {
@@ -18,10 +17,6 @@ export const register = async (req, res) => {
                 message = 'This user with this email is already taken!'
             }
             res.json({ message });
-        } else if (!EmailValidator.validate(email)) {
-            res.json({ message: 'Invalid email address!' });
-        } else if (password.length < 6) {
-            res.json({ message: 'The password is too short!' });
         } else {
             const satl = bcrypt.genSaltSync(10)
             const hash = bcrypt.hashSync(password, satl)
