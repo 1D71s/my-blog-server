@@ -5,12 +5,12 @@ import dotenv from "dotenv"
 import cors from "cors"
 //for connect to all IP adress
 
-import authRoute from "./routes/auth.js"
-import postRoute from "./routes/post.js"
-import commentRoute from "./routes/comments.js"
-import userRoute from "./routes/user.js"
+import authRoute from "./src/routes/auth.js"
+import postRoute from "./src/routes/post.js"
+import commentRoute from "./src/routes/comments.js"
+import userRoute from "./src/routes/user.js"
 
-import { checkAuth } from "./utils/auth.js";
+import { checkAuth } from "./src/utils/auth.js";
 
 import multer from 'multer'
 
