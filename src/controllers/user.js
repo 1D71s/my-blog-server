@@ -5,7 +5,7 @@ import * as EmailValidator from 'email-validator';
 export const editProfile = async (req, res) => {
     try {
 
-        const { username, email, image } = req.body
+        const { username, email, image, fullInfo, sex } = req.body
 
         const existingUser = await User.findOne({
             $and: [
@@ -32,8 +32,10 @@ export const editProfile = async (req, res) => {
                 },
                 {
                     useravatar: image,
-                    username: username,
-                    email: email
+                    username,
+                    email,
+                    sex,
+                    fullInfo: {...fullInfo}
                 }
             );
     
