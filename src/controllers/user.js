@@ -5,7 +5,7 @@ import * as EmailValidator from 'email-validator';
 export const editProfile = async (req, res) => {
     try {
 
-        const { username, email, image, fullInfo, sex } = req.body
+        const { username, email, image, fullInfo, sex, firstName, lastName } = req.body
 
         const existingUser = await User.findOne({
             $and: [
@@ -35,6 +35,8 @@ export const editProfile = async (req, res) => {
                     username,
                     email,
                     sex,
+                    firstName,
+                    lastName,
                     fullInfo: {...fullInfo}
                 }
             );
@@ -44,5 +46,21 @@ export const editProfile = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Что-то пошло не так!' });
+    }
+};
+
+
+export const getUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id); 
+
+        if (!user) {
+            return res.json({ message: "User not found" });
+        }
+
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" }); 
     }
 };
