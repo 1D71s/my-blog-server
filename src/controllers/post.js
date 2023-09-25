@@ -76,14 +76,14 @@ export const getOnePosts = async (req, res) => {
 };
 
 
-export const getMyPosts = async (req, res) => {
+export const getUserPosts = async (req, res) => {
     try {
-        const user = await User.findById(req.userId)
+        const user = await User.findById(req.params.id)
 
         const list = await Promise.all(
             user.posts.map(post => {
                 return Post.findById(post._id).populate('author')
-            })
+            }).reverse()
         )
 
         res.json(list)
