@@ -61,6 +61,29 @@ export const getUser = async (req, res) => {
         res.json(user);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal Server Error" }); 
+        res.status(500).json({ message: "Can't get user" }); 
     }
 };
+
+
+export const getAllUser = async (req, res) => {
+    try {
+        const users = await User.find();
+
+        function getRandomUsers(usersArray, count) {
+            const shuffledArray = [...usersArray];
+            for (let i = shuffledArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+            }
+            return shuffledArray.slice(0, count);
+        }
+
+        const randomUsers = getRandomUsers(users, 15); 
+        
+        res.status(200).json(randomUsers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Can't get users" });
+    }
+}
