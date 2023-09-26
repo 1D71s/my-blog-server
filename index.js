@@ -9,6 +9,7 @@ import authRoute from "./src/routes/auth.js"
 import postRoute from "./src/routes/post.js"
 import commentRoute from "./src/routes/comments.js"
 import userRoute from "./src/routes/user.js"
+import likeRoute from "./src/routes/like.js"
 
 import { checkAuth } from "./src/utils/auth.js";
 
@@ -32,6 +33,7 @@ app.use('/auth/', authRoute)
 app.use('/posts/', postRoute)
 app.use('/comments/', commentRoute)
 app.use('/user/', userRoute)
+app.use('/like/', likeRoute)
 
 
 //for images
