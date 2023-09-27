@@ -2,17 +2,17 @@ import Post from "../models/Post.js";
 import User from "../models/User.js"
 import Comment from "../models/Comment.js"
 
-
-
 export const createPost = async (req, res) => {
     try {
         const { title, text, tags, image } = req.body
         const author = await User.findById(req.userId)
 
+        const uniqueTags = Array.from(new Set(tags));
+
         const newPost = new Post ({
             title,
             text,
-            tags,
+            tags: uniqueTags,
             image,
             author
         })
@@ -119,6 +119,8 @@ export const editPost = async (req, res) => {
         const { title, text, tags, image } = req.body;
         const post = await Post.findById(req.params.id);
 
+        const uniqueTags = Array.from(new Set(tags));
+
         if (!post) {
             return res.status(404).json({ message: 'Пост не найден!' });
         }
@@ -129,7 +131,7 @@ export const editPost = async (req, res) => {
             return res.status(403).json({ message: 'Нет доступа!' });
         }
 
-        await Post.updateOne({ _id: req.params.id }, { title, text, image, tags });
+        await Post.updateOne({ _id: req.params.id }, { title, text, image, tags: uniqueTags });
 
         res.json({ message: 'Пост успешно обновлен!' });
     } catch (error) {
