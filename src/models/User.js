@@ -20,7 +20,7 @@ const UserSchema = new Schema({
         about: { type: String, default: '' },
     },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    folowing: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 }, { timestamps: true, })
 
 export default mongoose.model('User', UserSchema)

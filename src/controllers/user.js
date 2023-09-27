@@ -87,3 +87,41 @@ export const getAllUser = async (req, res) => {
         res.status(500).json({ message: "Can't get users" });
     }
 }
+
+export const followUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+        const userForFollow = await User.findById(req.params.id);
+    
+        if (!userForFollow) {
+            return res.status(404).json({ message: "User don't found!" });
+        }
+    
+        const following = userForFollow.followers.includes(user._id);
+        const follow = user.following.includes(user._id);
+  
+        if (follow || following) {
+            await User.findByIdAndUpdate(userForFollow, {
+                $pull: { followers: user._id }
+            });
+
+            await User.findByIdAndUpdate(user, {
+                $pull: { following: userForFollow._id }
+            });
+
+            res.json({ message: 'followig!' });
+        } else {
+            userForFollow.followers.push(user._id);
+            await userForFollow.save();
+
+            user.following.push(userForFollow._id);
+            await user.save();
+
+            res.json({ message: 'unfollowing!' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Invalid server!" });
+    }
+};
+
