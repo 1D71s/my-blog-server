@@ -52,7 +52,7 @@ export const editProfile = async (req, res) => {
 
 export const getUser = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).populate('following').populate('followers'); 
+        const user = await User.findById(req.params.id); 
 
         if (!user) {
             return res.json({ message: "User not found" });
