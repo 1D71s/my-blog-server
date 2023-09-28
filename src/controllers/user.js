@@ -52,7 +52,7 @@ export const editProfile = async (req, res) => {
 
 export const getUser = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id); 
+        const user = await User.findById(req.params.id).populate('following').populate('followers'); 
 
         if (!user) {
             return res.json({ message: "User not found" });
@@ -125,3 +125,36 @@ export const followUser = async (req, res) => {
     }
 };
 
+export const getFollowers = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).populate('followers');
+    
+        if (!user) {
+            return res.status(404).json({ message: "User don't found!" });
+        }
+
+        res.json(user.followers)
+    
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Invalid server!" });
+    }
+};
+
+export const getFollowing = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).populate('following');
+    
+        if (!user) {
+            return res.status(404).json({ message: "User don't found!" });
+        }
+
+        res.json(user.following)
+    
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Invalid server!" });
+    }
+};

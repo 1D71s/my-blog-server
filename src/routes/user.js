@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { editProfile, getUser, getAllUser, followUser } from "../controllers/user.js";
+import { editProfile, getUser, getAllUser, followUser, getFollowers, getFollowing } from "../controllers/user.js";
 import { checkAuth } from "../utils/auth.js";
 
 const router = new Router()
@@ -11,5 +11,9 @@ router.get('/fullinfo/:id', getUser)
 router.get('/getall', getAllUser)
 
 router.put('/follow/:id', checkAuth, followUser)
+
+router.get('/followers/:id', checkAuth, getFollowers)
+
+router.get('/following/:id', checkAuth, getFollowing)
 
 export default router
