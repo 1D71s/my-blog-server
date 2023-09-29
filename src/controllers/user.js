@@ -96,6 +96,10 @@ export const followUser = async (req, res) => {
         if (!userForFollow) {
             return res.status(404).json({ message: "User don't found!" });
         }
+
+        if (user._id === userForFollow._id) {
+            return res.status(404).json({ message: "You can't follow to youself" });
+        }
     
         const following = userForFollow.followers.includes(user._id);
         const follow = user.following.includes(user._id);
