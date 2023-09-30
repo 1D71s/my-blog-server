@@ -9,6 +9,7 @@ const UserSchema = new Schema({
     lastName: { type: String, required: true },
     sex: { type: String, required: true },
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+    favorite: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
     fullInfo: {
         myStatus: { type: String, default: '' },
         birthday: { type: String, default: '' },

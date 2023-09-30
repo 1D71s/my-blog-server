@@ -8,7 +8,7 @@ const PostSchema = new Schema({
     image: { type: String, default: '' },
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     likes: { type: Array, default: [] },
-    comments: [ { type: mongoose.Schema.Types.ObjectId, ref: 'Comment' } ]
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
 }, {timestamps: true,})
 
 export default mongoose.model('Post', PostSchema)

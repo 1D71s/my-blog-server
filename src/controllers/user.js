@@ -1,4 +1,5 @@
 import User from "../models/User.js"
+import Post from "../models/Post.js";
 import * as EmailValidator from 'email-validator';
 
 
@@ -91,34 +92,34 @@ export const getAllUser = async (req, res) => {
 export const followUser = async (req, res) => {
     try {
         const user = await User.findById(req.userId);
-        const userForFollow = await User.findById(req.params.id);
+        const post = await User.findById(req.params.id);
     
-        if (!userForFollow) {
+        if (!post) {
             return res.status(404).json({ message: "User don't found!" });
         }
 
-        if (user._id === userForFollow._id) {
+        if (user._id === post._id) {
             return res.status(404).json({ message: "You can't follow to youself" });
         }
     
-        const following = userForFollow.followers.includes(user._id);
+        const following = post.followers.includes(user._id);
         const follow = user.following.includes(user._id);
   
         if (follow || following) {
-            await User.findByIdAndUpdate(userForFollow, {
+            await User.findByIdAndUpdate(post, {
                 $pull: { followers: user._id }
             });
 
             await User.findByIdAndUpdate(user, {
-                $pull: { following: userForFollow._id }
+                $pull: { following: post._id }
             });
 
             res.json({ message: 'followig!' });
         } else {
-            userForFollow.followers.push(user._id);
-            await userForFollow.save();
+            post.followers.push(user._id);
+            await post.save();
 
-            user.following.push(userForFollow._id);
+            user.following.push(post._id);
             await user.save();
 
             res.json({ message: 'unfollowing!' });
@@ -155,6 +156,60 @@ export const getFollowing = async (req, res) => {
         }
 
         res.json(user.following)
+    
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Invalid server!" });
+    }
+};
+
+
+export const addToFavorivePost = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+        const post = await Post.findById(req.params.id);
+    
+        if (!post) {
+            return res.status(404).json({ message: "Post don't found!" });
+        }
+        
+        const added = user.favorite.includes(post._id);
+  
+        if (added) {
+            await User.findByIdAndUpdate(user, {
+                $pull: { favorite: post._id }
+            });
+
+            res.json({ message: 'Deleted!' });
+
+        } else {
+            user.favorite.push(post);
+            await user.save();
+
+            res.json({ message: 'Added to favorite!' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Invalid server!" });
+    }
+};
+
+export const getFavorite = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).populate('favorite');
+    
+        if (!user) {
+            return res.status(404).json({ message: "User don't found!" });
+        }
+
+        const favorite = await Promise.all(
+            user.favorite.map(post => {
+                return Post.findById(post._id).populate('author')
+            }).reverse()
+        )
+
+        res.json(favorite)
     
         
     } catch (error) {
