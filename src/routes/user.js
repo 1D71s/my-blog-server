@@ -12,8 +12,8 @@ router.get('/getall', getAllUser)
 
 router.put('/follow/:id', checkAuth, followUser)
 
-router.get('/followers/:id', checkAuth, getFollowers)
+router.get('/followers/:id', getFollowers)
 
-router.get('/following/:id', checkAuth, getFollowing)
+router.get('/following/:id', getFollowing)
 
 export default router

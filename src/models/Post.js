@@ -7,7 +7,7 @@ const PostSchema = new Schema({
     views: { type: Array, default: [] },
     image: { type: String, default: '' },
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Like' }],
+    likes: { type: Array, default: [] },
     comments: [ { type: mongoose.Schema.Types.ObjectId, ref: 'Comment' } ]
 }, {timestamps: true,})
 
