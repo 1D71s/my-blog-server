@@ -31,13 +31,27 @@ export const createPost = async (req, res) => {
 export const getAllPosts = async (req, res) => {
     try {
         const posts = await Post.find().sort("-createdAt").populate('author')
-        const popularPosts = await Post.find().sort("-views").populate('author')
 
         if (!posts) {
             return res.json({message: 'Постов не нет!'})
         }
 
-        res.json({posts, popularPosts})
+        res.json(posts)
+
+    } catch (error) {
+        res.json({message: 'Не удалось получить статьи!'})
+    }
+}
+
+export const getFollowingPosts = async (req, res) => {
+    try {
+        const posts = await Post.find().sort("-views").populate('author')
+
+        if (!posts) {
+            return res.json({message: 'Постов не нет!'})
+        }
+
+        res.json(posts)
 
     } catch (error) {
         res.json({message: 'Не удалось получить статьи!'})

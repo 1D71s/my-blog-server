@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createPost, getAllPosts, getOnePosts, getUserPosts, removePost, editPost, getTagPosts, likesPost } from "../controllers/post.js";
+import { createPost, getAllPosts, getOnePosts, getUserPosts, removePost, editPost, getTagPosts, likesPost, getFollowingPosts } from "../controllers/post.js";
 import { checkAuth, checkViews } from "../utils/auth.js";
 
 const router = new Router()
@@ -7,6 +7,8 @@ const router = new Router()
 router.post('/create', checkAuth, createPost)
 
 router.get('/allposts', getAllPosts)
+
+router.get('/following', checkAuth, getFollowingPosts)
 
 router.get('/getonepost/:id',checkViews, getOnePosts)
 
