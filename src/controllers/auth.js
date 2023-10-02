@@ -102,3 +102,37 @@ export const getMe = async (req, res) => {
         return res.status(500).json({ message: 'Something went wrong!' });
     }
 };
+
+export const changePassword = async (req, res) => {
+    try {       
+
+        const { password, newPassword } = req.body
+
+        const user = await User.findById(req.userId)
+
+        if (!user) {
+            return res.json({
+                message: 'This user does not exist!'
+            })
+        }
+
+        const isPasswordCorect = await bcrypt.compare(password, user.password)
+
+        if (!isPasswordCorect) {
+            return res.json({
+                message: 'Incorrect password!'
+            })
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hashSync(newPassword, salt)
+
+        user.password = hash
+        await user.save();
+
+        res.json({message: "The password has been changed!"})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({message: 'Error during authorization!'})
+    }
+}
