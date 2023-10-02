@@ -112,24 +112,30 @@ export const getUserPosts = async (req, res) => {
 
 export const removePost = async (req, res) => {
     try {
+        const { id } = req.params;
 
-        const {id} = req.params
-        const post = await Post.findByIdAndDelete(req.params.id)
+        const post = await Post.findById(id);
 
         if (!post) {
-            res.json({ message: 'Статью не найдено!' })
+            return res.json({ message: 'Статью не найдено!' });
         }
+
+        for (const commentId of post.comments) {
+            await Comment.findByIdAndDelete(commentId);
+        }
+
+        await Post.findByIdAndDelete(id);
 
         await User.findByIdAndUpdate(req.userId, {
             $pull: { posts: req.params.id }
         })
 
-        res.json({message: 'Статью удалено!', id})
-
+        res.json({ message: 'Статью удалено!', id });
     } catch (error) {
-        res.json({message: 'Не удалось удалить статью!'})
+        console.error(error);
+        res.status(500).json({ message: 'Не удалось удалить статью!' });
     }
-}
+};
 
 export const editPost = async (req, res) => {
     try {
