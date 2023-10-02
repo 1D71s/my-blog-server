@@ -33,7 +33,7 @@ export const getAllPosts = async (req, res) => {
         const posts = await Post.find().sort("-createdAt").populate('author')
 
         if (!posts) {
-            return res.json({message: 'Постов не нет!'})
+            return res.json({message: 'Постов нет!'})
         }
 
         res.json(posts)
@@ -46,12 +46,15 @@ export const getAllPosts = async (req, res) => {
 export const getFollowingPosts = async (req, res) => {
     try {
         const posts = await Post.find().sort("-views").populate('author')
+        const user = await User.findById(req.userId)
 
         if (!posts) {
-            return res.json({message: 'Постов не нет!'})
+            return res.json({message: 'Постов нет!'})
         }
 
-        res.json(posts)
+        const result = await posts.filter(i => user.following.includes(i.author._id))
+
+        res.json(result)
 
     } catch (error) {
         res.json({message: 'Не удалось получить статьи!'})
