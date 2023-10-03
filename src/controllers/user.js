@@ -217,3 +217,16 @@ export const getFavorite = async (req, res) => {
         res.status(500).json({ message: "Invalid server!" });
     }
 };
+
+export const searchUser = async (req, res) => {
+    try {
+        const { search } = req.body;
+        const users = await User.find({ username: { $regex: search, $options: 'i' } });
+        
+        res.json({ users });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Ошибка сервера!" });
+    }
+};
+
