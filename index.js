@@ -5,6 +5,11 @@ import dotenv from "dotenv"
 import cors from "cors"
 //for connect to all IP adress
 
+//import socket
+import { createServer } from 'node:http'
+import { Server } from 'socket.io';
+import { initSocket } from "./src/controllers/message.js";
+
 import authRoute from "./src/routes/auth.js"
 import postRoute from "./src/routes/post.js"
 import commentRoute from "./src/routes/comments.js"
@@ -17,10 +22,18 @@ import multer from 'multer'
 const app = express()
 dotenv.config()
 
+
 // Constans
 const PORT = process.env.PORT  
 const DB_USER = process.env.DB_USER
 const DB_PASSWORD = process.env.DB_PASSWORD
+const CLIENT = process.env.CLIENT 
+
+//Connect socket
+const server = createServer(app);
+const io = initSocket(server, {
+    origin: CLIENT 
+});
 
 // Middleware
 app.use(cors())
@@ -62,7 +75,7 @@ async function start() {
             
         ).then(console.log('Connect to DB'))
 
-        app.listen(PORT, () => console.log(`Server started at ${PORT}`))
+        server.listen(PORT, () => console.log(`Server started at ${PORT}`))
     } catch (error) {
         console.log(error)
     }
