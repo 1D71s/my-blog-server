@@ -49,7 +49,38 @@ export const initSocket = (server, corsOptions) => {
         
                 socket.emit('sendNewMessage', dialog.messages);
             } catch (error) {
-                console.error('Ошибка при создании/поиске диалога:', error);
+                console.error(error);
+            }
+        });
+        
+        //get all dialog
+        socket.on('getAllDialogs', async (data) => {
+            try {
+                const userIdToFind = await User.findById(data);
+                
+                if (!userIdToFind) {
+                    return;
+                }
+        
+                const dialogs = await Dialog.find({
+                    participants: data // Ищем диалоги, в которых data._id есть в participants
+                  }).populate('participants');
+
+
+                const result = dialogs.map(dialog => {
+                    const messages = dialog.messages;
+                    const lastMessage = messages[messages.length - 1];
+                    const sender = dialog.participants.find(participant => String(participant._id) !== String(userIdToFind._id));
+                    
+                    return {
+                        messages: lastMessage,
+                        who: sender
+                    };
+                });
+        
+                socket.emit('sendAllDialog', result);
+            } catch (error) {
+                console.error(error);
             }
         });
         

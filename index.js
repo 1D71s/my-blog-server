@@ -22,7 +22,6 @@ import multer from 'multer'
 const app = express()
 dotenv.config()
 
-
 // Constans
 const PORT = process.env.PORT  
 const DB_USER = process.env.DB_USER
