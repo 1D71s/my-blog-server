@@ -26,6 +26,31 @@ export const initSocket = (server, corsOptions) => {
             }
         });
 
+        const sendMessageToList = async (data) => {
+            const userIdToFind = await User.findById(data);
+
+            if (!userIdToFind) {
+                return;
+            }
+    
+            const dialogs = await Dialog.find({
+                participants: data 
+            }).populate('participants');
+
+            const result = dialogs.map(dialog => {
+                const messages = dialog.messages;
+                const lastMessage = messages[messages.length - 1];
+                const sender = dialog.participants.find(participant => String(participant._id) !== String(userIdToFind._id));
+                
+                return {
+                    messages: lastMessage,
+                    who: sender
+                };
+            });
+
+            socket.emit('sendAllDialog', result);
+        }
+        
         //send message
         socket.on('writeMessage', async (data) => {
             try {
@@ -48,43 +73,22 @@ export const initSocket = (server, corsOptions) => {
                 await dialog.save();
         
                 socket.emit('sendNewMessage', dialog.messages);
+                sendMessageToList(data.user2)
+                sendMessageToList(data.user1)
             } catch (error) {
                 console.error(error);
             }
         });
+        
         
         //get all dialog
         socket.on('getAllDialogs', async (data) => {
             try {
-                const userIdToFind = await User.findById(data);
-                
-                if (!userIdToFind) {
-                    return;
-                }
-        
-                const dialogs = await Dialog.find({
-                    participants: data // Ищем диалоги, в которых data._id есть в participants
-                  }).populate('participants');
-
-
-                const result = dialogs.map(dialog => {
-                    const messages = dialog.messages;
-                    const lastMessage = messages[messages.length - 1];
-                    const sender = dialog.participants.find(participant => String(participant._id) !== String(userIdToFind._id));
-                    
-                    return {
-                        messages: lastMessage,
-                        who: sender
-                    };
-                });
-        
-                socket.emit('sendAllDialog', result);
+                sendMessageToList(data)
             } catch (error) {
                 console.error(error);
             }
         });
-        
-        
 
     });
 
