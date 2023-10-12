@@ -18,7 +18,7 @@ export const initSocket = (server, corsOptions) => {
             
             
                 if (dialog) {
-                    socket.emit('sendAllMessage', dialog.messages);
+                    socket.emit('sendAllMessage', dialog);
                 } 
 
             } catch (error) {
@@ -28,28 +28,33 @@ export const initSocket = (server, corsOptions) => {
 
         const sendMessageToList = async (data) => {
             const userIdToFind = await User.findById(data);
-
+        
             if (!userIdToFind) {
                 return;
             }
-    
+        
             const dialogs = await Dialog.find({
                 participants: data 
-            }).populate('participants');
-
+            }).populate('participants messages'); // Вам нужно также загрузить messages для каждого диалога
+        
             const result = dialogs.map(dialog => {
                 const messages = dialog.messages;
                 const lastMessage = messages[messages.length - 1];
                 const sender = dialog.participants.find(participant => String(participant._id) !== String(userIdToFind._id));
-                
+        
+                // Подсчитайте количество непрочитанных сообщений внутри каждого диалога
+                const unreadMessagesCount = messages.filter(message => !message.read && message.sender._id.toString() !== data).length;
+        
                 return {
                     messages: lastMessage,
-                    who: sender
+                    who: sender,
+                    counter: unreadMessagesCount 
                 };
             });
-
+        
             socket.emit('sendAllDialog', result);
         }
+        
         
         //send message
         socket.on('writeMessage', async (data) => {
@@ -87,6 +92,25 @@ export const initSocket = (server, corsOptions) => {
                 sendMessageToList(data)
             } catch (error) {
                 console.error(error);
+            }
+        });
+
+        //readed message
+        socket.on('readed', async (data) => {
+            try {
+                const dialog = await Dialog.findById(data.dialog).populate('messages');
+        
+                const message = dialog.messages.find(i => i._id.toString() === data.id);
+        
+                if (message) {
+                    message.read = true;
+                    await dialog.save()
+    
+                } else {
+                    console.log('Сообщение не найдено');
+                }
+            } catch (error) {
+                console.log(error);
             }
         });
 
