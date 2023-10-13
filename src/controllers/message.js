@@ -4,8 +4,8 @@ import Dialog from '../models/Message.js'
 
 export const initSocket = (server, corsOptions) => {
     const io = new Server(server, { cors: corsOptions });
-
     io.on('connection', (socket) => {
+        
 
         //get messages
         socket.on('connectToChat', async (data) => {
@@ -78,14 +78,11 @@ export const initSocket = (server, corsOptions) => {
                 await dialog.save();
         
                 socket.emit('sendNewMessage', dialog.messages);
-                sendMessageToList(data.user2)
-                sendMessageToList(data.user1)
             } catch (error) {
                 console.error(error);
             }
         });
-        
-        
+    
         //get all dialog
         socket.on('getAllDialogs', async (data) => {
             try {
